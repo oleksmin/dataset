@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_absolute_error
 
@@ -48,9 +49,11 @@ def dataset():
 
     # if not data.empty: return 1 # unnecessary anymore
     
-    scaled_dayofyear = ((data['dayofyear']-1)/366)*2*np.pi
-    data['cos_dayofyear'] = np.sin(scaled_dayofyear-np.pi/2) # to make min values on Jan 1 and max values on Jul 1
-    
+    LinearRegr(X_train, X_test, y_train, y_test)
+
+
+def DecisionTreeRegr(data):
+   
     data_train = data[data['date'] < '2020-01-01']
     data_test = data[data['date'] >= '2020-01-01']
 
@@ -62,7 +65,6 @@ def dataset():
 
     y_train = data_train['T']
     y_test = data_test['T']
-
 
     model = DecisionTreeRegressor(max_depth=3,min_samples_split=2)
     model.fit(X_train, y_train)
@@ -80,6 +82,28 @@ def dataset():
 
     print('Mean error on train set: ', mean_absolute_error(y_train, pred_train))    
     print('Mean error on test set: ', mean_absolute_error(y_test, pred_test))    
+
+
+def LinearRegr(X_train, X_test, y_train, y_test):
+    scaled_dayofyear = ((data['dayofyear']-1)/366)*2*np.pi 
+    data['cos_dayofyear'] = np.sin(scaled_dayofyear-np.pi/2) # to make min values on Jan 1 and max values on Jul 1
+
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    pred_train = model.predict(X_train)
+    pred_test = model.predict(X_test)
+
+    plt.figure(figsize=(20,5))
+    plt.plot(data_train['date'],data_train['T'], label='Train',color='red')
+    plt.plot(data_test['date'],data_test['T'],label='Test',color='blue')
+    plt.plot(data_train['date'],pred_train, label='Pred Train',color='yellow')
+    plt.plot(data_test['date'],pred_test,label='Pred Test',color='green')
+    plt.legend()
+    plt.show()
+
+    print('Mean error on test set: ', mean_absolute_error(y_test, pred_test))    
+
 
 
 if __name__=="__main__":
