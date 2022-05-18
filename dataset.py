@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_absolute_error
 
 def dataset():
@@ -16,23 +16,23 @@ def dataset():
     
     data['dayofyear'] = data['date'].dt.dayofyear
 
-    scaled_dayofyear = ((data['dayofyear']-1)/366)*2*np.pi
-    data['cos_dayofyear'] = np.sin(scaled_dayofyear-np.pi/2)
+    #scaled_dayofyear = ((data['dayofyear']-1)/366)*2*np.pi
+    #data['cos_dayofyear'] = np.sin(scaled_dayofyear-np.pi/2)
     
     data_train = data[data['date'] < '2020-01-01']
     data_test = data[data['date'] >= '2020-01-01']
 
     X_train = pd.DataFrame()
-    X_train['cos_dayofyear'] = data_train['cos_dayofyear']
+    X_train['dayofyear'] = data_train['dayofyear']
 
     X_test = pd.DataFrame()
-    X_test['cos_dayofyear']=data_test['cos_dayofyear']
+    X_test['dayofyear']=data_test['dayofyear']
 
     y_train = data_train['T']
     y_test = data_test['T']
 
 
-    model = LinearRegression()
+    model = DecisionTreeRegressor(max_depth=3,min_samples_split=2)
     model.fit(X_train, y_train)
 
     pred_train = model.predict(X_train)
@@ -46,6 +46,7 @@ def dataset():
     plt.legend()
     plt.show()
 
+    print('Mean error on train set: ', mean_absolute_error(y_train, pred_train))    
     print('Mean error on test set: ', mean_absolute_error(y_test, pred_test))    
 
 
